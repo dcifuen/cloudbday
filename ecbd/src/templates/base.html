@@ -1,0 +1,114 @@
+{% extends "dojango/base.html" %}
+{% load birthday_tags %}
+
+{% block dojango_page_title %}{% block title %}{% endblock %} - CloudBDay{% endblock %}
+{% block dojango_header_extra %}
+<meta name="google-site-verification" content="DQ7zgSOxTD4TruNBbqHoKlRL5Wwf5JeQhUaVBiJNhEQ" />
+<link href="/media/img/favicon.ico" rel="shortcut icon" >
+<style type="text/css">
+	#overlay { 
+     	width:100%; height:100%; margin:0; padding:0;
+		background:#fff url('{{ DOJANGO.DOJOX_URL }}/image/resources/images/loading.gif') no-repeat center center;
+		position:absolute;
+		z-index:999;
+    }
+</style>
+<link type="text/css" rel="stylesheet" href="/media/css/screen.css">
+<link type="text/css" rel="stylesheet" href="/media/css/normal.css">
+	{% block css %}
+	{% endblock %}
+	
+<script type="text/javascript">
+   	dojo.require("dojo.parser");
+   	dojo.require("dijit.dijit");
+
+   	dojo.require("dijit.MenuBar");
+   	dojo.require("dijit.PopupMenuBarItem");
+   	dojo.require("dijit.Menu");
+   	dojo.require("dijit.MenuItem");
+   	dojo.require("dijit.PopupMenuItem");
+
+    function goTo(url) {
+        window.location = url;
+    }
+
+    dojo.addOnLoad( function(){
+        // run the parser. defaults to dojo.body(), but you can pass any node
+        // it runs async, so fadeout when it's done. 
+          
+        dojo.fadeOut({
+              node: "overlay",
+              duration: 300,
+              onEnd: function(){ 
+                     // hide it completely after fadeout
+                     dojo.style("overlay", "display", "none");
+              }
+        }).play();
+  	});
+</script>	
+
+	{% block preload_js %}
+	{% endblock %}
+{% analytics_code %}
+{% endblock %}
+{% block dojango_content %}
+
+<div id="overlay"></div>
+<div class="main">
+
+	<div id="header">
+		{% if domain %}
+		  	<img width="143px" height="59px" alt="{{ domain }}" src="https://www.google.com/a/cpanel/{{ domain }}/images/logo.gif" />
+		  {% else %}
+		  	<img width="143px" height="37px" alt="" src="/media/img/logo.png" />
+		  {% endif %}
+	</div>
+	
+	{% block userbar %}
+	<div id="userbar">
+		<span>
+			<b>{{ user.email }}</b> &nbsp;|&nbsp; <a href="{% url logout domain %}">Logout</a>
+		</span>
+	</div>
+	{% endblock %}
+	
+	{% block navmenu %}
+	<div dojoType="dijit.MenuBar" id="navMenu">
+	
+		<div dojoType="dijit.MenuBarItem" onclick="goTo('{% url course_list domain %}');">
+			 <img alt="" src="/media/img/education.png"> Manage Courses
+    	</div>
+
+		<div dojoType="dijit.MenuBarItem" onclick="goTo('{% url test_record_list domain %}');">
+			 <img alt="" src="/media/img/pencil.png"> Manage Tests
+    	</div>
+    	
+    	<div dojoType="dijit.MenuBarItem" onclick="goTo('{% url client_setup domain %}');">
+			 <img alt="" src="/media/img/tools.png"> General Settings
+    	</div>
+	{% endblock %}
+
+	</div>
+	
+	<div id="content">
+	
+		{% block content-header %}
+		    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+		    {% if info %}<div class="info">{{ info }}</div>{% endif %}
+		    {% if messages %}
+		      {% for message in messages %}
+		        <div class="info">{{ message }}</div>
+		      {% endfor %}
+		    {% endif %}
+		 {% endblock %}
+		
+		 {% block content %}{% endblock %}
+	</div>
+	
+    <div id="creditos" class="span-24">
+    	<a href="http://www.eforcers.com" target="_blank"><span>www.eforcers.com</span></a>
+    </div>
+</div>
+    {% block js %}
+    {% endblock %}
+{% endblock %}

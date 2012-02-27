@@ -1,0 +1,33 @@
+body{
+	font-family:Arial,Verdana,sans-serif !important;
+	font-size: 10pt;
+	margin: 10px 0}
+th{background-color:#CCC;line-height:25px;font-weight:bold;border:1px solid #999}
+table{background-color:#FFF; border-collapse:collapse;border:1px solid #999}
+td{padding:5px;border:1px solid #999}	
+img{
+	float: left;
+	margin:10px 15px 0 0;
+}
+a:link{color: #083242}a:hover{color: #0C4A60}a:visited{color: #666}
+p{text-align: justify;}
+h1{color:#333333;}
+h2{font-size: 12pt;}
+.cursos h4{background-color: #CCC;padding: 5px;margin-bottom: 35px;}
+.cursos{float: left;width: 100%}
+.curso{background-color: #FFF;border-bottom: 1px solid #CCC;margin-bottom: 15px}
+.curso h4{background-color: #AF250C;font-weight: normal;font-size: 12pt;}
+.curso-imagen{width: 150px; float:left;}.curso-imagen img{max-width: 120px;}
+.curso-info{width: 45%;float: left;margin-right: 35px}
+.curso-progreso, .curso-actividad{width: 150px; float: left;margin: 30px 10px;}
+
+.teacher table{width: 100%;border: 1px solid #CCC}.teacher td{border: 0;}
+.teacher th{vertical-align: bottom;padding: 0;border: 0;line-height: 24px;}
+.teacher th img{margin: 0;float: left;}
+.teacher th a{line-height: 24px;float: left;font-size: 10px;padding: 0 10px}
+.teacher th a:LINK{text-decoration: none;}
+.teacher th a:HOVER{text-decoration: none;}
+.teacher th a.current{color:#333;background-color: #FFF;padding: 0}
+.teacher{}
+.left{float: left;}
+#cronograma img {float: none; margin: 0}

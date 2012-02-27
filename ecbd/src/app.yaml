@@ -1,0 +1,43 @@
+application: cloudbday
+version: 0-5-3
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+builtins:
+- remote_api: on
+- deferred: on
+
+inbound_services:
+- warmup
+
+libraries:
+- name: django
+  version: latest
+- name: lxml
+  version: latest
+
+handlers:
+- url: /_ah/queue/deferred
+  script: djangoappengine.deferred.handler.application
+  login: admin
+
+- url: /_ah/stats/.*
+  script: djangoappengine.appstats.application
+
+- url: /media/admin
+  static_dir: django/contrib/admin/media
+  expiration: '0'
+  
+- url: /dojango/dojo-media/1.6.1/dojango
+  static_dir: dojango/dojo-media/dojango
+  
+- url: /media
+  static_dir: birthday/media
+  
+- url: /favicon\.ico
+  static_files: birthday/media/img/favicon.ico
+  upload: birthday/media/img/favicon\.ico
+
+- url: /.*
+  script: djangoappengine.main.application

@@ -1,0 +1,425 @@
+body {
+	font:Arial,Verdana,sans-serif;
+	font-size: 11px;
+	margin-bottom: 45px;
+}
+
+a {
+	color: #3A4856;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #3A4856;
+}
+
+a:hover {
+	color: red;
+	border-bottom: 1px solid #C6C8CB;
+}
+
+img{margin-right: 15px;}
+
+fieldset {
+	border-top: 1px solid #C6C8CB;
+	padding: 10px 0 10px 0;
+	margin-top: 20px;
+}
+
+fieldset legend {
+	font-weight: bold;
+	margin-left: 10px;
+}
+
+table.listing {
+	font: 100% "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+	padding: 0;
+	margin: auto;
+	border-collapse: collapse;
+	color: #333;
+	width: 100%;
+	/*background: #F3F5F7;*/
+}
+
+table.listing a {
+	color: #3A4856;
+	text-decoration: none;
+}
+
+table.listing a:visited {
+	color: #3A4856;
+}
+
+table.listing a:hover {
+	color: red;
+	border-bottom: 1px solid #C6C8CB;
+}
+
+table.listing caption {
+	text-align: left;
+	text-transform: capitalize;
+	padding: 10px 0 10px 0;
+	font: 120% "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS",
+		sans-serif;
+	font-weight: bold;
+}
+
+table.listing thead th {
+	padding: 5px 5px;
+	color: #000000;
+	text-align: center;
+	font-weight: bold;
+	height: 23px;
+}
+
+table.listing tbody,table.listing thead {
+	border-left: 1px solid #EAECEE;
+	border-right: 1px solid #EAECEE;
+}
+
+table.listing tbody {
+	border-bottom: 1px solid #EAECEE;
+}
+
+table.listing tbody td,table.listing tbody th {
+	padding: 7px;
+	background: url("../img/td_back.gif") repeat-x;
+	text-align: left;
+}
+
+table.listing tbody tr { /*background: #F3F5F7;*/
+	
+}
+
+table.listing tbody tr.odd {
+	background: #F0F2F4;
+}
+
+table.listing tbody  tr:hover {
+	background: #EAECEE;
+	color: #111;
+}
+
+table.listing tfoot td,table.listing tfoot th,table.listing tfoot tr {
+	text-align: left;
+	font: 90% "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+	/*background: #6B6B5B;*/
+	padding: 5px;
+}
+
+table.formfields {
+	font: 100% "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+	padding: 0;
+	margin: auto;
+	color: #333;
+	width: 100%;
+}
+
+table.formfields a {
+	color: #3A4856;
+	text-decoration: none;
+}
+
+table.formfields a:visited {
+	color: #3A4856;
+}
+
+table.lformfields a:hover {
+	color: red;
+	border-bottom: 1px solid #C6C8CB;
+}
+
+table.formfields caption {
+	text-align: left;
+	text-transform: capitalize;
+	padding: 10px 0 10px 0;
+	font: 120% "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS",
+		sans-serif;
+	font-weight: bold;
+}
+
+table.formfields thead th {
+	padding: 5px 5px;
+	color: #000000;
+	text-align: center;
+	font-weight: bold;
+	height: 23px;
+}
+
+table.formfields tbody,table.formfields thead {
+	border-left: 1px solid #EAECEE;
+	border-right: 1px solid #EAECEE;
+}
+
+table.formfields tbody {
+	border-bottom: 1px solid #EAECEE;
+}
+
+table.formfields tbody td,table.listing tbody th {
+	padding: 7px;
+	text-align: left;
+}
+
+table.formfields tfoot td,table.formfields tfoot th,table.formfields tfoot tr
+	{
+	text-align: left;
+	font: 90% "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+	padding: 5px;
+}
+
+div.main {
+	background-color: #FFFFFF;
+	width: 98%;
+	margin: 0 auto;
+	margin-top: 0px;
+	padding-top: 30px;
+}
+
+div.img {
+	margin: 2px;
+	border: 1px solid #CCC;
+	height: auto;
+	width: auto;
+	float: left;
+	text-align: center;
+}
+
+div.img img {
+	display: inline;
+	margin: 3px;
+	border: 1px solid #ffffff;
+}
+
+div.img a:hover img {
+	border: 1px solid #ff0000;
+}
+
+div.desc {
+	text-align: center;
+	font-weight: normal;
+	width: 120px;
+	margin: 2px;
+}
+
+p label {
+	width: 12%;
+	display: block;
+	font-weight: bold;
+	float: left;
+}
+
+#content {
+	min-height: 500px;
+}
+
+.helptext {
+	color: #336B91;
+}
+
+.dijitTextBox {
+}
+
+.action img {
+	border: none;
+	vertical-align: middle;
+	padding-right: 2px;
+}
+
+.appsTextbox {
+	background-image: url('/img/google-blue.png');
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding-left: 18px;
+	border: 1px solid #B5BCC7;
+	height: 18px;
+}
+
+#header {
+	padding-left: 10px;
+}
+
+#navMenu img {
+	vertical-align: bottom;
+}
+
+#userbar {
+	width: 100%;
+	height: 20px;
+}
+
+#userbar span {
+	float: right;
+	padding-right: 20px;
+}
+
+#info,#error {
+	width: 100%;
+	min-height: 20px;
+	border: 1px solid #CCC;
+	font-weight: normal;
+}
+
+#info span,#error span {
+	width: 100%;
+	min-height: 20px;
+	padding: 2px 0 0 20px;
+}
+
+#info {
+	background: url(../img/information.png) left no-repeat;
+	background-color: #FDF2B6;
+	color: #000000;
+}
+
+#error {
+	background: url(../img/error.png) left no-repeat;
+	background-color: #FF0000;
+	color: #FFFFFF;
+}
+
+#content {
+	padding: 10px;
+}
+
+.search {
+	margin-top: 10px;
+	margin-bottom: 5px;	
+}
+
+.search input {
+	border: 1px solid #CCC;
+	height: 22px;
+	float: left;
+}
+
+.search button {
+	height: 24px;
+	background: #F3F5F7;
+	border-bottom: 1px solid #CCC;
+	border-top: 1px solid #CCC;
+	border-right: 1px solid #CCC;
+	font-size: 95%;
+	float: left;
+	margin-left: 0;
+	cursor: pointer;
+}
+
+.operator-permision {
+	padding: 0px 8px 0 8px;
+	float: left;
+	vertical-align: middle;
+}
+
+.button {
+	border: 1px solid #CCC;
+	background: #6B6B5B;
+	padding: 3px 5px 3px 5px;
+	color: #CCC;
+	font-weight: normal;
+	font-size: 100%;
+	cursor: pointer;
+}
+
+.button:hover {
+	color: #FFF;
+}
+
+.pagination {
+	float: right;
+	padding: 5px 10px 5px 0;
+	font-size: 80%;
+	font-weight: bold;
+}
+
+.pagination a img {
+	vertical-align: middle;
+}
+
+.pagination a:hover {
+	border: none;
+}
+
+.pie {
+	text-align: right;
+	padding: 10px 0;
+	min-height: 30px;
+}
+.admin-course{width:90%; margin:15px 0;}
+.cursos{margin-bottom: 15px;min-height: 200px;float: left; width: 230px;margin-right: 15px;padding: 10px;border: 1px solid #EDEDED;}
+
+.cursos:HOVER{background-color: #FFFFDE;border: 1px solid #EDEDED;}
+#moduleListPane{padding: 0}
+.dijitContentPane{float: left;}
+.module-order, .module-order a{
+	background: transparent url(../img/modulo-on.png) no-repeat center center;
+	width: 30px;
+	line-height: 30px;
+	display: block;
+	float: left;
+	text-align: center;
+	margin-right: 10px;
+	color: #FFF;}
+.cursos h3{margin-top: 8px;float: left;width: 190px;font-size: 1em;font-weight: bold;}
+.cursos ul{padding-left: 20px;}
+h4 a{color: #9B200B;font-weight: bold;}
+h4{margin-top: 1.25em !important;font-size: 1.2em;text-decoration: none !important;}
+.curso-info, .curso-actividad{float: left;width: 100%}
+.helptext{width: auto; text-align: justify;background-color: #EDEDED;display: block;padding: 5px}
+
+
+/* --- Creditos EFORCERS ---*/
+#creditos,#creditosUS {
+	width: 100%;
+	background-color: #FFFFFF;
+	border-top: 1px solid #CCCCCC;
+	bottom: 0;
+	left: 0;
+	position: fixed;
+}
+
+#creditos a,#creditosUS a {
+	float: right;
+	padding-right: 15px;
+	margin: 5px;
+}
+
+#creditos a:link,#creditos a:visited,#creditos a:active {
+	background: transparent url(../img/creditos-eforcers.png) no-repeat top;
+	height: 17px;
+	width: 116px;
+	display: block;
+}
+
+#creditos a:hover {
+	background: transparent url(../img/creditos-eforcers.png) no-repeat
+		bottom;
+	height: 17px;
+	width: 116px;
+	display: block;
+	border: none;
+}
+
+#creditosUS a:link,#creditosUS a:visited,#creditosUS a:active {
+	background: transparent url(../img/creditos-eforcers-us.png) no-repeat
+		bottom;
+	height: 21px;
+	width: 115px;
+	display: block;
+}
+
+#creditosUS a:hover {
+	background: transparent url(../img/creditos-eforcers-us.png) no-repeat
+		bottom;
+	height: 21px;
+	width: 115px;
+	display: block;
+}
+
+#creditosUS span,#creditos span {
+	display: none;
+}
+
+.required label:after {content:" *"; color:#9B200B}
+label.required{color:#9B200B}
+
+/* --- Fin Creditos EFORCERS ---*/
