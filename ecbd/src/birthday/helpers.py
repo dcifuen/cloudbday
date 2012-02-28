@@ -63,19 +63,6 @@ class CalendarHelper:
                                                        access_token.token, access_token.token_secret,
                                                        gdata.gauth.ACCESS_TOKEN, next=None, verifier=None)
 
-    def get_user_events(self, user):
-
-        if not user and self.check_email(user):
-            return None
-
-        self.setup_token(user)
-        feed = self.client.GetCalendarEventFeed()
-
-        if len(feed.entry):
-            return feed.entry
-        else:
-            return None
-
     def create_event(self, calendar_id, guests_list, event_title, start_date, end_date):
         """ 
         Create a new single-occurrence event in the given calendar with all the 
@@ -211,7 +198,6 @@ class SitesHelper:
         scope = gdata.acl.data.AclScope(value=email, type=scope)
         acl_role = gdata.acl.data.AclRole(value=role)
         acl = gdata.sites.data.AclEntry(scope=scope, role=acl_role)
-
         acl_entry = self.client.Post(acl, self.client.MakeAclFeedUri())
 
     def list_sites(self):
@@ -332,33 +318,3 @@ class GroupsHelper(object):
                                             scopes=SCOPE,
                                             oauth_input_params=input_params)
         self.service.SetOAuthToken(oauth_token)
-
-    def add_as_owner(self, user, group_id):
-            # First as member then as owner
-            # so they show in the admin interface (api bug?)
-            self.service.AddMemberToGroup(user, group_id)
-            self.service.AddOwnerToGroup(user, group_id)
-
-    def add_as_member(self, user, group_id):
-            self.service.AddMemberToGroup(user, group_id)
-
-    def create_group(self, group_id, name, description):
-        try:
-            return self.service.CreateGroup(
-                group_id,
-                name,
-                description,
-                groups_service.PERMISSION_MEMBER)
-        except AppsForYourDomainException, err:
-            if not hasattr(err, 'reason') or err.reason != 'EntityExists':
-                raise
-
-    def update_group_for_course(self, group_id, name, description):
-        return self.service.UpdateGroup(
-            group_id,
-            name,
-            description,
-            groups_service.PERMISSION_MEMBER)
-
-    def add2group(self, email, group_id):
-        self.add_as_member(email, group_id)

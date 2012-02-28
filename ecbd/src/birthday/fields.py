@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 from django.forms.fields import CharField
 from django.core import validators
 from django.core.exceptions import ValidationError

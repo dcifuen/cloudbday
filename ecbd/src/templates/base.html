@@ -74,22 +74,10 @@
 	
 	{% block navmenu %}
 	<div dojoType="dijit.MenuBar" id="navMenu">
-	
-		<div dojoType="dijit.MenuBarItem" onclick="goTo('{% url course_list domain %}');">
-			 <img alt="" src="/media/img/education.png"> Manage Courses
-    	</div>
-
-		<div dojoType="dijit.MenuBarItem" onclick="goTo('{% url test_record_list domain %}');">
-			 <img alt="" src="/media/img/pencil.png"> Manage Tests
-    	</div>
-    	
-    	<div dojoType="dijit.MenuBarItem" onclick="goTo('{% url client_setup domain %}');">
-			 <img alt="" src="/media/img/tools.png"> General Settings
-    	</div>
+	   
+	</div>	
 	{% endblock %}
 
-	</div>
-	
 	<div id="content">
 	
 		{% block content-header %}

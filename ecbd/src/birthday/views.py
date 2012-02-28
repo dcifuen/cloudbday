@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from birthday.decorators import admin_login_required
 from birthday.models import Client, User
+from birthday.forms import make_client_form
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_out
 from django.core.urlresolvers import reverse
@@ -65,7 +66,7 @@ def client_setup(request, domain):
             form.save()
             admins = form.cleaned_data['administrators']
             admins_setup(admins)
-            return redirect('course_list', domain)
+            return redirect('user_list', domain)
     try:
         client = Client.objects.get_from_cache()
     except Client.DoesNotExist:
