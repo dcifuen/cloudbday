@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import logging
-import urllib
-import datetime
 
+def send_birthday_email(request):
+    """
+    @param request:
+    """
+    

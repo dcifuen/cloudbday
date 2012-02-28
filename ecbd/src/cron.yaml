@@ -1,1 +1,4 @@
-cron:
+- description: monday morning mailout
+  url: /tasks/birthday/send
+  schedule: every day 00:00
+  timezone: America/Bogota
