@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 
+from StringIO import StringIO
+from django.core.cache import cache
+from django.template import Template, Context
+from gdata.apps.service import AppsForYourDomainException
+from oauth.views import ACCESS_TOKEN
+from urlparse import urlparse
+import atom.data
+import datetime
+import gdata.acl.data
+import gdata.apps.groups.service as groups_service
+import gdata.auth
+import gdata.calendar.client
+import gdata.contacts.client
+import gdata.contacts.data
+import gdata.sites.client
+import gdata.sites.data
 import logging
 import mimetypes
 import re
-import datetime
+import settings
 
 #This is backwards compatibility when lxml is not present
 try:
@@ -11,22 +27,8 @@ try:
 except ImportError:
     from xml.etree import ElementTree as etree
 
-from StringIO import StringIO
-from oauth.views import ACCESS_TOKEN
-from urlparse import urlparse
-from gdata.apps.service import AppsForYourDomainException
-import atom.data
-import gdata.auth
-import gdata.acl.data
-import gdata.calendar.client
-import gdata.sites.client
-import gdata.sites.data
-import gdata.apps.groups.service as groups_service
 
-from django.core.cache import cache
-from django.template import Template, Context
 
-import settings
 
 SOURCE_APP_NAME = getattr(settings, 'SOURCE_APP_NAME')
 GDATA_DATE_FORMAT = getattr(settings, 'GDATA_DATE_FORMAT')
@@ -37,6 +39,43 @@ SIG_METHOD = gdata.auth.OAuthSignatureMethod.HMAC_SHA1
 
 __author__ = 'desarrollo@eforcers.com'
 
+class ProfilesHelper:
+    """A Google Profiles (Contacts) helper class"""
+    def __init__(self):
+        self.client = gdata.contacts.client.ContactsClient(source=SOURCE_APP_NAME)
+        
+    def check_email(self, user):
+        """Performs basic validation of the supplied email address as outlined
+        in http://code.google.com/googleapps/marketplace/best_practices.html
+        """
+        domain = urlparse(user.federated_identity()).hostname
+        m = re.search('.*@' + domain, user.email())
+        if m:
+            return True
+        else:
+            return False
+
+
+    def setup_token(self, user=None):
+        access_token = gdata.gauth.AeLoad(ACCESS_TOKEN)
+        self.client.http_client.debug = False
+        self.client.auth_token = gdata.gauth.OAuthHmacToken(CONSUMER_KEY, CONSUMER_SECRET,
+                                                       access_token.token, access_token.token_secret,
+                                                       gdata.gauth.ACCESS_TOKEN, next=None, verifier=None)
+        
+    def get_all_profiles(self, domain):   
+        self.client.domain = domain
+        self.setup_token()
+        # get all user profiles for the domain
+        profiles = []
+        feed_uri = self.client.GetFeedUri('profiles')
+        while feed_uri:
+            feed = self.client.GetProfilesFeed(uri=feed_uri)
+            profiles.extend(feed.entry)
+            feed_uri = feed.FindNextLink()
+        return profiles
+
+    
 class CalendarHelper:
     """A Google Calendar helper class"""
 
@@ -58,7 +97,7 @@ class CalendarHelper:
     def setup_token(self, user=None):
 
         access_token = gdata.gauth.AeLoad(ACCESS_TOKEN)
-        self.client.http_client.debug = True
+        self.client.http_client.debug = False
         self.client.auth_token = gdata.gauth.OAuthHmacToken(CONSUMER_KEY, CONSUMER_SECRET,
                                                        access_token.token, access_token.token_secret,
                                                        gdata.gauth.ACCESS_TOKEN, next=None, verifier=None)
