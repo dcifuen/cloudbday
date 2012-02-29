@@ -7,15 +7,13 @@
 
 	<Support>
 		<!-- Vinculo donde son enviados administradores y usuarios para soporte -->
-		<!-- <Link rel="support" href="http://sites.google.com/a/eforcers.com/ecbd/support" 
-			/> -->
+		<Link rel="support" href="http://sites.google.com/a/eforcers.com/ecbd/support" />
 		<!-- URL for application setup as an optional redirect during the install -->
 		<!-- <Link rel="setup" href="http://cloudbday.appspot.com/settings?hd=${DOMAIN_NAME}" 
 			/> -->
 		<!-- URL for application configuration, accessed from the app settings 
 			page in the control panel -->
-		<!-- <Link rel="manage" href="http://cloudbday.appspot.com/settings?hd=${DOMAIN_NAME}" 
-			/> -->
+		<Link rel="manage" href="http://cloudbday.appspot.com/a/${DOMAIN_NAME}/" />
 		<!-- URL that is displayed to admins during the deletion process, to specify 
 			policies such as data retention, how to claim accounts, etc. -->
 		<!-- <Link rel="deletion-policy" href="http://sites.google.com/a/eforcers.com/easg/deletion-policy" 
