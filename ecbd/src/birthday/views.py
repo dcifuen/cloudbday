@@ -15,6 +15,7 @@ import datetime
 import gdata.gauth
 import logging
 import re
+from birthday.helpers import ProfilesHelper
 
 def sign_out(request, domain):
     """
@@ -117,6 +118,56 @@ def login_redirect(request):
         return redirect(url)
     return render_to_response('enter_login_domain.html')
 
+def sync_with_profile(request):
+    """
+    Queries all the profiles getting the birthdate and comparing it with the one
+    stored in the datastore (if any). If the user is not present the it creates
+    the record.
+    @param request:
+    """
+    current_namespace = namespace_manager.get_namespace()
+    for namespace in get_namespaces():
+        # Forget about the default empty namespace
+        if namespace:
+            logging.debug("Doing sync from profiles for namespace %s", namespace)
+            namespace_manager.set_namespace(namespace)
+            client = Client.objects.get_from_cache()
+            profiles_helper = ProfilesHelper()
+            #Query all profiles for birthday info 
+            #TODO: Ojo con dominios secundarios
+            for entry in profiles_helper.get_all_profiles(client.domain):
+                username = entry.id.text[entry.id.text.rfind('/')+1:]
+                if entry.birthday:
+                    logging.debug("Birthday set in profile for user [%s] on day [%s]", 
+                                 username, entry.birthday.when)
+                    bday_array = entry.birthday.when.split('-')
+                    #If field contains year 
+                    if len(bday_array) == 3:
+                        birth_year = bday_array[0]
+                        birth_month = bday_array[1]
+                        birth_day = bday_array[2]
+                    elif len(bday_array) == 4 and not bday_array[0] and not bday_array[1]:
+                        birth_year = None
+                        birth_month = bday_array[2]
+                        birth_day = bday_array[3]
+                    else:
+                        logging.error('The birthday date is not in a usual format, unable to parse it, setting all fields to None')
+                        birth_year = None
+                        birth_month = None
+                        birth_day = None
+                    logging.debug("Birthday data for [%s] day [%s] month [%s] year [%s]", 
+                                 username, birth_day, birth_month, birth_year)
+                    user = User.objects.get_or_create(email= "%s@%s" % (username,client.domain))[0]
+                    #TODO: save only when something have changed
+                    user.birth_day = birth_day
+                    user.birth_month = birth_month
+                    user.birth_year = birth_year
+                    user.save()
+
+    #Restore to the original namespace
+    namespace_manager.set_namespace(current_namespace)
+    return HttpResponse(content="Birthday dates were sync from profiles successfully", status=200)
+
 def send_birthday_messages(request):
     """
     It goes through all the namespaces making queries to the datastore for 
@@ -130,9 +181,9 @@ def send_birthday_messages(request):
         logging.debug("Checking celebrants for today day %s month %s namespace %s", today.month, today.day, namespace.namespace_name)
         if namespace and namespace.namespace_name:
             namespace_manager.set_namespace(namespace.namespace_name)
-        celebrants = User.objects.filter(receive_mail=True, birth_month=today.month, birth_day=today.day)
-        for celebrant in celebrants:
-            logging.debug("Found a celebrant for today! %s", celebrant)
+            celebrants = User.objects.filter(receive_mail=True, birth_month=today.month, birth_day=today.day)
+            for celebrant in celebrants:
+                logging.debug("Found a celebrant for today! %s", celebrant)
             #TODO: schedule sending email
     #Restore to the original namespace
     namespace_manager.set_namespace(current_namespace)
