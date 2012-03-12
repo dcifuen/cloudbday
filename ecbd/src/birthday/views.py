@@ -5,10 +5,13 @@ from birthday.helpers import ProfilesHelper
 from birthday.models import Client, User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_out
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from django.template.loader import render_to_string
+from django.views.generic.list_detail import object_list
 from google.appengine.api import namespace_manager
 from google.appengine.ext import deferred
 from google.appengine.ext.db.metadata import get_namespaces
@@ -19,8 +22,6 @@ import logging
 import re
 import settings
 
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
 
 ECBD_SENDER_EMAIL = getattr(settings, 'ECBD_SENDER_EMAIL')
 
@@ -84,6 +85,13 @@ def client_setup(request, domain):
     return render_to_response('admin_client.html',
                               {'form':form},
                               RequestContext(request))
+    
+@admin_login_required()
+def user_list(request, domain):
+    users = User.objects.all()
+    return object_list(request, queryset=users,
+                       template_name='admin_user_list.html',
+                       template_object_name='users')
 
 @admin_login_required()
 def clear_cache(request, domain):
@@ -184,14 +192,21 @@ def sync_with_profile(request):
     return HttpResponse(content="Birthday dates were sync from profiles successfully", status=200)
 
 def send_birthday_message(celebrant_pk):
+    """
+    This is the actual method that sends the email message to the celebrant
+    @param celebrant_pk: primary key of the person who is receiving the email
+    """
     celebrant = User.objects.get(pk=celebrant_pk)
     client = Client.objects.get_from_cache()
     #TODO: Bring dinamically the HTML content from a Google Site instead of a static template
-    body = render_to_string('birthday_card.html',
+    body_html = render_to_string('formatted_message_alpina.com.html',
                             {'celebrant': celebrant})
-    #TODO: Define the sender email dinamically
-    send_mail(client.subject, body, ECBD_SENDER_EMAIL,
-              [celebrant.email])
+    
+    body_txt = render_to_string('unformatted_message_alpina.com.html',
+                            {'celebrant': celebrant})
+    msg = EmailMultiAlternatives(client.subject, body_txt, ECBD_SENDER_EMAIL, [celebrant.email])
+    msg.attach_alternative(body_html, "text/html")
+    msg.send()
     
 
 def send_daily_birthday_messages(request):
