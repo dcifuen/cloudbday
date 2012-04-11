@@ -26,6 +26,7 @@ def make_client_form(domain_):
                 'domain',
                 'administrators',
                 'apps_edition',
+                'subject',
                 )
             
     return _ClientForm

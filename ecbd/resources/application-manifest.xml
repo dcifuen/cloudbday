@@ -32,7 +32,7 @@
 
 	<!-- Declara el dominio OpenID para que la aplicacion quede en lista blanca -->
 	<Extension id="realm" type="openIdRealm">
-		<Url>http://cloudbday.appspot.com/</Url>
+		<Url>http://cloudbday.appspot.com</Url>
 	</Extension>
 
 	<!-- Acceso a cuales APIs y por que? -->

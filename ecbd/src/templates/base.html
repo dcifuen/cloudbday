@@ -74,7 +74,12 @@
 	
 	{% block navmenu %}
 	<div dojoType="dijit.MenuBar" id="navMenu">
-	   
+	    <div dojoType="dijit.MenuBarItem" onclick="goTo('{% url user_list domain %}');">
+             Manage Users
+        </div>
+	    <div dojoType="dijit.MenuBarItem" onclick="goTo('{% url client_setup domain %}');">
+             <img alt="" src="/media/img/tools.png"> General Settings
+        </div>
 	</div>	
 	{% endblock %}
 

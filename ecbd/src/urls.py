@@ -11,7 +11,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     ('^_ah/warmup$', 'djangoappengine.views.warmup'),    
     (r'^dojango/', include('dojango.urls')),
-    url(r'^tasks/birthday/send/$', 'birthday.views.send_birthday_messages', name='send_birthday_messages'),
+    url(r'^tasks/birthday/send/$', 'birthday.views.send_daily_birthday_messages', name='send_daily_birthday_messages'),
     url(r'^tasks/profile/sync/$', 'birthday.views.sync_with_profile', name='sync_with_profile'),
     url(r'^openid/login/', 'birthday.views.login_redirect', name='login'),
     url(r'^a/(?P<domain>(?:[\w](?:[\w-]{0,61}[\w])?\.)+(?:[A-Za-z]{2,6}\.?|[\w-]{2,}\.?))/logout/', 'birthday.views.sign_out', name='logout'),

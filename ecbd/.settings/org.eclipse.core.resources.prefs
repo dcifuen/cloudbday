@@ -1,4 +1,4 @@
-#Tue Feb 28 09:15:33 COT 2012
+#Mon Mar 12 10:59:12 COT 2012
 eclipse.preferences.version=1
 encoding//src/birthday/admin.py=utf-8
 encoding//src/birthday/fields.py=utf-8
@@ -6,4 +6,6 @@ encoding//src/birthday/forms.py=utf-8
 encoding//src/birthday/helpers.py=utf-8
 encoding//src/birthday/models.py=utf-8
 encoding//src/birthday/tasks.py=utf-8
+encoding//src/birthday/templates/formatted_message_alpina.com.html=UTF-8
+encoding//src/birthday/templates/unformatted_message_alpina.com.html=UTF-8
 encoding//src/birthday/views.py=utf-8
