@@ -23,9 +23,11 @@ class Client(models.Model):
     )
     name = models.CharField(max_length=128, help_text="Name of the organization")
     domain = models.CharField(max_length=128, help_text="Google Apps primary domain of the organization")
+    secondary_domains = ListField(help_text="Google Apps secondary domains of the organization")
     apps_edition = models.IntegerField(choices=APPS_EDITION_CHOICES)
     administrators = ListField(models.EmailField(), help_text="Whom will be in change of creating and managing courses")
     subject = models.CharField(max_length=128, help_text="Subject for the email messages")
+    template = models.CharField(max_length=128, help_text="Template name of the birtday message")
     
     #custom manager
     objects = ClientManager()
