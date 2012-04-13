@@ -66,7 +66,7 @@ class ProfilesHelper:
     def get_all_profiles(self, domain):   
         self.client.domain = domain
         self.setup_token()
-        # get all user profiles for the domain
+        # get all user profiles for the primary domain
         profiles = []
         feed_uri = self.client.GetFeedUri('profiles')
         while feed_uri:

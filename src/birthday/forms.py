@@ -19,14 +19,25 @@ def make_client_form(domain_):
                                             'submitOnlyValidValue': True,
         }))
         
+        secondary_domains = ListFormField(required=False, 
+                                   help_text="Google Apps secondary domains of the organization",
+                                   widget=forms.ListInput(attrs={
+                                            'regExpGen': 'dojox.validate.regexp.host',
+                                            'useAnim': False,
+                                            'submitOnlyValidValue': True,
+        }))
+        
         class Meta:
             model = Client
             fields = (
                 'name',
                 'domain',
                 'administrators',
+                'secondary_domains',
                 'apps_edition',
                 'subject',
+                'html_template_path',
+                'txt_template_path',
                 )
             
     return _ClientForm

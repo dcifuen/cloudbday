@@ -27,7 +27,8 @@ class Client(models.Model):
     apps_edition = models.IntegerField(choices=APPS_EDITION_CHOICES)
     administrators = ListField(models.EmailField(), help_text="Whom will be in change of creating and managing courses")
     subject = models.CharField(max_length=128, help_text="Subject for the email messages")
-    template = models.CharField(max_length=128, help_text="Template name of the birtday message")
+    html_template_path = models.CharField(max_length=128, help_text="HTML template file path of the birtday message")
+    txt_template_path = models.CharField(max_length=128, help_text="TXT template file path of the birtday message")
     
     #custom manager
     objects = ClientManager()

@@ -70,6 +70,7 @@ def client_setup(request, domain):
     if request.method == 'POST':
         request_copy = request.POST.copy()
         request_copy['administrators'] = request.POST.getlist('administrators')
+        request_copy['secondary_domains'] = request.POST.getlist('secondary_domains')
         form = ClientForm(request_copy)
         if form.is_valid():
             form.save()
@@ -133,6 +134,48 @@ def login_redirect(request):
         return redirect(url)
     return render_to_response('enter_login_domain.html')
 
+
+def sync_domain_profiles(domain):
+    profiles_helper = ProfilesHelper()
+    #Query all profiles for birthday info 
+    for entry in profiles_helper.get_all_profiles(domain):
+        username = entry.id.text[entry.id.text.rfind('/')+1:]
+        if entry.birthday:
+            logging.debug("Birthday set in profile for user [%s] on day [%s]", 
+                         username, entry.birthday.when)
+            bday_array = entry.birthday.when.split('-')
+            #If field contains year 
+            if len(bday_array) == 3:
+                birth_year = bday_array[0]
+                birth_month = bday_array[1]
+                birth_day = bday_array[2]
+            elif len(bday_array) == 4 and not bday_array[0] and not bday_array[1]:
+                birth_year = None
+                birth_month = bday_array[2]
+                birth_day = bday_array[3]
+            else:
+                logging.error('The birthday date is not in a usual format, unable to parse it, setting all fields to None')
+                birth_year = None
+                birth_month = None
+                birth_day = None
+            logging.debug("Birthday data for [%s] day [%s] month [%s] year [%s]", 
+                         username, birth_day, birth_month, birth_year)
+            user = User.objects.get_or_create(email= "%s@%s" % (username,domain))[0]
+            #Save only if something have changed
+            needs_to_save = False
+            if user.birth_day != birth_day:
+                user.birth_day = birth_day
+                needs_to_save = True
+            if user.birth_month != birth_month:
+                user.birth_month = birth_month
+                needs_to_save = True
+            if user.birth_year != birth_year:
+                user.birth_year = birth_year
+                needs_to_save = True
+            if needs_to_save:
+                user.save()
+
+
 def sync_with_profile(request):
     """
     Queries all the profiles getting the birthdate and comparing it with the one
@@ -147,46 +190,9 @@ def sync_with_profile(request):
             logging.debug("Doing sync from profiles for namespace %s", namespace)
             namespace_manager.set_namespace(namespace)
             client = Client.objects.get_from_cache()
-            profiles_helper = ProfilesHelper()
-            #Query all profiles for birthday info 
-            #TODO: Ojo con dominios secundarios
-            for entry in profiles_helper.get_all_profiles(client.domain):
-                username = entry.id.text[entry.id.text.rfind('/')+1:]
-                if entry.birthday:
-                    logging.debug("Birthday set in profile for user [%s] on day [%s]", 
-                                 username, entry.birthday.when)
-                    bday_array = entry.birthday.when.split('-')
-                    #If field contains year 
-                    if len(bday_array) == 3:
-                        birth_year = bday_array[0]
-                        birth_month = bday_array[1]
-                        birth_day = bday_array[2]
-                    elif len(bday_array) == 4 and not bday_array[0] and not bday_array[1]:
-                        birth_year = None
-                        birth_month = bday_array[2]
-                        birth_day = bday_array[3]
-                    else:
-                        logging.error('The birthday date is not in a usual format, unable to parse it, setting all fields to None')
-                        birth_year = None
-                        birth_month = None
-                        birth_day = None
-                    logging.debug("Birthday data for [%s] day [%s] month [%s] year [%s]", 
-                                 username, birth_day, birth_month, birth_year)
-                    user = User.objects.get_or_create(email= "%s@%s" % (username,client.domain))[0]
-                    #Save only if something have changed
-                    needs_to_save = False
-                    if user.birth_day != birth_day:
-                        user.birth_day = birth_day
-                        needs_to_save = True
-                    if user.birth_month != birth_month:
-                        user.birth_month = birth_month
-                        needs_to_save = True
-                    if user.birth_year != birth_year:
-                        user.birth_year = birth_year
-                        needs_to_save = True
-                    if needs_to_save:
-                        user.save()
-
+            deferred.defer(sync_domain_profiles, client.domain, _queue="sync-queue")
+            for secondary_domain in client.secondary_domains:
+                deferred.defer(sync_domain_profiles, secondary_domain, _queue="sync-queue")
     #Restore to the original namespace
     namespace_manager.set_namespace(current_namespace)
     return HttpResponse(content="Birthday dates were sync from profiles successfully", status=200)
@@ -199,10 +205,10 @@ def send_birthday_message(celebrant_pk):
     celebrant = User.objects.get(pk=celebrant_pk)
     client = Client.objects.get_from_cache()
     #TODO: Bring dinamically the HTML content from a Google Site instead of a static template
-    body_html = render_to_string('formatted_message_alpina.com.html',
+    body_html = render_to_string(client.html_template_path,
                             {'celebrant': celebrant})
     
-    body_txt = render_to_string('unformatted_message_alpina.com.html',
+    body_txt = render_to_string(client.txt_template_path,
                             {'celebrant': celebrant})
     msg = EmailMultiAlternatives(client.subject, body_txt, ECBD_SENDER_EMAIL, [celebrant.email])
     msg.attach_alternative(body_html, "text/html")
