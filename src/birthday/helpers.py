@@ -27,11 +27,9 @@ try:
 except ImportError:
     from xml.etree import ElementTree as etree
 
-
-
-
 SOURCE_APP_NAME = getattr(settings, 'SOURCE_APP_NAME')
 GDATA_DATE_FORMAT = getattr(settings, 'GDATA_DATE_FORMAT')
+GDATA_MAX_RESULTS = getattr(settings, 'GDATA_MAX_RESULTS')
 CONSUMER_KEY = getattr(settings, 'OAUTH_CONSUMER_KEY')
 CONSUMER_SECRET = getattr(settings, 'OAUTH_CONSUMER_SECRET')
 SCOPE = getattr(settings, 'OAUTH_SCOPE')
@@ -63,16 +61,18 @@ class ProfilesHelper:
                                                        access_token.token, access_token.token_secret,
                                                        gdata.gauth.ACCESS_TOKEN, next=None, verifier=None)
         
-    def get_all_profiles(self, domain):   
+    def get_all_profiles(self, domain):
         self.client.domain = domain
         self.setup_token()
         # get all user profiles for the primary domain
         profiles = []
-        feed_uri = self.client.GetFeedUri('profiles')
+        feed_uri = "%s?max-results=%s" % (self.client.GetFeedUri('profiles'), GDATA_MAX_RESULTS)
         while feed_uri:
             feed = self.client.GetProfilesFeed(uri=feed_uri)
             profiles.extend(feed.entry)
             feed_uri = feed.FindNextLink()
+        logging.debug("Got [%s] entries from profile feed for domain [%s]", 
+                         len(profiles), domain)
         return profiles
 
     

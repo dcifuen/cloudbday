@@ -191,8 +191,7 @@ def sync_with_profile(request):
             namespace_manager.set_namespace(namespace)
             client = Client.objects.get_from_cache()
             deferred.defer(sync_domain_profiles, client.domain, _queue="sync-queue")
-            for secondary_domain in client.secondary_domains:
-                deferred.defer(sync_domain_profiles, secondary_domain, _queue="sync-queue")
+            
     #Restore to the original namespace
     namespace_manager.set_namespace(current_namespace)
     return HttpResponse(content="Birthday dates were sync from profiles successfully", status=200)
