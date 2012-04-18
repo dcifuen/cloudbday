@@ -140,6 +140,7 @@ def sync_domain_profiles(domain):
     #Query all profiles for birthday info 
     for entry in profiles_helper.get_all_profiles(domain):
         username = entry.id.text[entry.id.text.rfind('/')+1:]
+        #Sync bday field
         if entry.birthday:
             logging.debug("Birthday set in profile for user [%s] on day [%s]", 
                          username, entry.birthday.when)
@@ -160,6 +161,11 @@ def sync_domain_profiles(domain):
                 birth_day = None
             logging.debug("Birthday data for [%s] day [%s] month [%s] year [%s]", 
                          username, birth_day, birth_month, birth_year)
+            #Sync names fields
+            if entry.name:
+                first_name = entry.name.given_name.text
+                last_name = entry.name.family_name.text
+                            
             user = User.objects.get_or_create(email= "%s@%s" % (username,domain))[0]
             #Save only if something have changed
             needs_to_save = False
@@ -172,8 +178,17 @@ def sync_domain_profiles(domain):
             if user.birth_year != birth_year:
                 user.birth_year = birth_year
                 needs_to_save = True
+            if user.first_name != first_name:
+                user.first_name = first_name
+                needs_to_save = True
+            if user.last_name != last_name:
+                user.last_name = last_name
+                needs_to_save = True
             if needs_to_save:
                 user.save()
+            
+            
+            
 
 
 def sync_with_profile(request):
@@ -209,7 +224,10 @@ def send_birthday_message(celebrant_pk):
     
     body_txt = render_to_string(client.txt_template_path,
                             {'celebrant': celebrant})
-    msg = EmailMultiAlternatives(client.subject, body_txt, "%s <%s>" % (client.from_name, ECBD_SENDER_EMAIL), [celebrant.email], headers = {'Reply-To': client.reply_to})
+    msg = EmailMultiAlternatives(client.subject, body_txt, 
+                                 "%s <%s>" % (client.from_name, ECBD_SENDER_EMAIL), 
+                                 ["%s %s <%s>" % (celebrant.first_name, celebrant.last_name, celebrant.email)], 
+                                 headers = {'Reply-To': client.reply_to})
     msg.attach_alternative(body_html, "text/html")
     msg.send()
     
