@@ -209,7 +209,7 @@ def send_birthday_message(celebrant_pk):
     
     body_txt = render_to_string(client.txt_template_path,
                             {'celebrant': celebrant})
-    msg = EmailMultiAlternatives(client.subject, body_txt, ECBD_SENDER_EMAIL, [celebrant.email])
+    msg = EmailMultiAlternatives(client.subject, body_txt, "%s <%s>" % (client.from_name, ECBD_SENDER_EMAIL), [celebrant.email], headers = {'Reply-To': client.reply_to})
     msg.attach_alternative(body_html, "text/html")
     msg.send()
     

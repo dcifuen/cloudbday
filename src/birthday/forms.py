@@ -36,6 +36,8 @@ def make_client_form(domain_):
                 'secondary_domains',
                 'apps_edition',
                 'subject',
+                'from_name',
+                'reply_to',
                 'html_template_path',
                 'txt_template_path',
                 )
