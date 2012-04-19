@@ -40,6 +40,7 @@ def make_client_form(domain_):
                 'reply_to',
                 'html_template_path',
                 'txt_template_path',
+                'calendar_id',
                 )
             
     return _ClientForm

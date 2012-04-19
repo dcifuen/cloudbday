@@ -31,7 +31,7 @@ class Client(models.Model):
     reply_to = models.EmailField(help_text="Email address where the replies of the celebrant goes to")
     html_template_path = models.CharField(max_length=128, help_text="HTML template file path of the birtday message")
     txt_template_path = models.CharField(max_length=128, help_text="TXT template file path of the birtday message")
-    
+    calendar_id = models.CharField(max_length=128, blank=True, null=True, help_text="Google Calendar ID to sync the birthdays with")    
     #custom manager
     objects = ClientManager()
     

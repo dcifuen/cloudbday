@@ -7,7 +7,7 @@ from gdata.apps.service import AppsForYourDomainException
 from oauth.views import ACCESS_TOKEN
 from urlparse import urlparse
 import atom.data
-import datetime
+from datetime import datetime, timedelta
 import gdata.acl.data
 import gdata.apps.groups.service as groups_service
 import gdata.auth
@@ -33,6 +33,8 @@ GDATA_MAX_RESULTS = getattr(settings, 'GDATA_MAX_RESULTS')
 CONSUMER_KEY = getattr(settings, 'OAUTH_CONSUMER_KEY')
 CONSUMER_SECRET = getattr(settings, 'OAUTH_CONSUMER_SECRET')
 SCOPE = getattr(settings, 'OAUTH_SCOPE')
+ECBD_USER_ATTRIBUTE_ID = getattr(settings, 'ECBD_USER_ATTRIBUTE_ID')
+
 SIG_METHOD = gdata.auth.OAuthSignatureMethod.HMAC_SHA1
 
 __author__ = 'desarrollo@eforcers.com'
@@ -62,6 +64,9 @@ class ProfilesHelper:
                                                        gdata.gauth.ACCESS_TOKEN, next=None, verifier=None)
         
     def get_all_profiles(self, domain):
+        """
+        Get the list of profile entries for the given domain
+        """
         self.client.domain = domain
         self.setup_token()
         # get all user profiles for the primary domain
@@ -128,7 +133,35 @@ class CalendarHelper:
         insert_uri = self.client.get_calendar_event_feed_uri(calendar=calendar_id)
         new_event = self.client.InsertEvent(event, insert_uri)
         return new_event
-
+    
+    def create_yearly_event(self, calendar_id, event_title, event_description, month, day, event_id):
+        self.setup_token()
+        start_date = datetime.today()
+        start_date = start_date.replace(month=month, day=day)
+        end_date = start_date + timedelta(days=1)
+        logging.info("Start date [%s] eend date [%s]", 
+                          start_date, end_date)
+        logging.info("Start date formatted [%s] eend date [%s]", 
+                          start_date.strftime('%Y%m%d'), 
+                                         end_date.strftime('%Y%m%d'))
+        recurrence_data = ('DTSTART;VALUE=DATE:%s\r\n'
+            + 'DTEND;VALUE=DATE:%s\r\n'
+            + 'RRULE:FREQ=YEARLY\r\n' % (start_date.strftime('%Y%m%d'), 
+                                         end_date.strftime('%Y%m%d')))
+        logging.info("Recurrence data looks like [%s]", 
+                          recurrence_data)
+        event = gdata.calendar.CalendarEventEntry()
+        event.title = atom.Title(text=event_title)
+        event.content = atom.Content(text=event_description)
+        # Set the recurrence of the event
+        event.recurrence = gdata.calendar.Recurrence(text=recurrence_data)
+        #Put an extended property to identify which user
+        event.extended_property.append(gdata.calendar.ExtendedProperty(name=ECBD_USER_ATTRIBUTE_ID, value=event_id))
+        
+        insert_uri = self.client.get_calendar_event_feed_uri(calendar=calendar_id)
+        new_event = self.client.InsertEvent(event, insert_uri)
+        return new_event
+    
     def create_calendar(self, title, summary='', color='#2952A3',
                         timezone='America/Bogota', location='Bogota', hidden='false'):
 
@@ -164,7 +197,22 @@ class CalendarHelper:
 
         new_rule = self.client.InsertAclEntry(rule, aclUrl)
         return new_rule
-
+    
+    def get_all_events(self, calendar_id):
+        """
+        Get the list of events entries for the given calendar
+        """        
+        self.setup_token()
+        events = [] 
+        feed_uri = "%s?max-results=%s" % (self.client.get_calendar_event_feed_uri(calendar=calendar_id), GDATA_MAX_RESULTS)
+        while feed_uri:
+            feed = self.client.get_calendar_event_feed(uri=feed_uri)
+            events.extend(feed.entry)
+            feed_uri = feed.FindNextLink()
+        logging.debug("Got [%s] entries from profile feed for calendar_id [%s]", 
+                         len(events), calendar_id)
+        return events
+        
 
 class SitesHelper:
     """A Google Sites helper class"""

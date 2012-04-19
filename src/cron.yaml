@@ -1,10 +1,16 @@
 cron:
-- description: daily morning mailout
-  url: /tasks/birthday/send
-  schedule: every day 00:00
-  timezone: America/Bogota
   
 - description: daily morning profile sync
   url: /tasks/profile/sync/
   schedule: every day 00:00
+  timezone: America/Bogota
+
+- description: daily morning mailout
+  url: /tasks/birthday/send
+  schedule: every day 01:00
+  timezone: America/Bogota  
+
+ - description: daily morning calendar sync
+  url: /tasks/calendar/sync/
+  schedule: every day 01:00
   timezone: America/Bogota

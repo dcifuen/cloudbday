@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from birthday.decorators import admin_login_required
 from birthday.forms import make_client_form
-from birthday.helpers import ProfilesHelper
+from birthday.helpers import ProfilesHelper, CalendarHelper
 from birthday.models import Client, User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_out
@@ -22,8 +22,8 @@ import logging
 import re
 import settings
 
-
 ECBD_SENDER_EMAIL = getattr(settings, 'ECBD_SENDER_EMAIL')
+ECBD_USER_ATTRIBUTE_ID = getattr(settings, 'ECBD_USER_ATTRIBUTE_ID')
 
 def sign_out(request, domain):
     """
@@ -134,6 +134,61 @@ def login_redirect(request):
         return redirect(url)
     return render_to_response('enter_login_domain.html')
 
+def sync_domain_calendar(domain, calendar_id):
+    calendar_helper = CalendarHelper()
+    #Query all the calendar events and save 
+    #TODO: It may break if there are too many
+    event_entries = {}
+    for entry in calendar_helper.get_all_events(calendar_id):
+        for property in entry.extended_property:
+            if property.name == ECBD_USER_ATTRIBUTE_ID:
+                event_entries[property.value] = entry
+                logging.debug("User [%s] already had an event in the calendar", 
+                         entry.title.text)    
+
+    #Query all users in the DB for birthday info
+    for user in User.objects.all():
+        if user.birth_day and user.birth_month:
+            #If the user key is not found then the event doesn't exists
+            if user.pk in event_entries:
+                #TODO: Check that date in the DS match the one in the event
+                # event_entry = event_entries[user.pk]
+                logging.debug("User [%s] found in DB but already had an event in the calendar, no need to create", 
+                         user.email)                
+            else:
+                calendar_helper.create_yearly_event(calendar_id, 
+                                                    user.email, 
+                                                    "Today is %s %s birthday" % (user.first_name, user.last_name) , 
+                                                    user.birth_month, 
+                                                    user.birth_day, 
+                                                    user.pk)
+                logging.debug("Birthday event set in the calendar for user [%s] on day [%s] and month [%s]", 
+                         user.email, user.birth_day, user.birth_month)
+                
+
+
+def sync_with_calendar(request):
+    """
+    Queries all the DB records getting the birthdate and comparing it with the one
+    stored in the Google Calendar event (if any). If the event doesn't exists 
+    the it creates it with annual recurrency forever.
+    @param request:
+    """
+    current_namespace = namespace_manager.get_namespace()
+    for namespace in get_namespaces():
+        # Forget about the default empty namespace
+        if namespace:
+            logging.debug("Doing sync from datastore to calendar for namespace %s", namespace)
+            namespace_manager.set_namespace(namespace)
+            client = Client.objects.get_from_cache()
+            #Only do the sync if there is a Google Calendar configured
+            if client.calendar_id:
+                deferred.defer(sync_domain_calendar, client.domain, client.calendar_id, _queue="sync-queue")
+            
+    #Restore to the original namespace
+    namespace_manager.set_namespace(current_namespace)
+    return HttpResponse(content="Birthday dates were scheduled to sync with Calendar successfully", status=200)
+
 
 def sync_domain_profiles(domain):
     profiles_helper = ProfilesHelper()
@@ -186,10 +241,6 @@ def sync_domain_profiles(domain):
                 needs_to_save = True
             if needs_to_save:
                 user.save()
-            
-            
-            
-
 
 def sync_with_profile(request):
     """
@@ -202,14 +253,14 @@ def sync_with_profile(request):
     for namespace in get_namespaces():
         # Forget about the default empty namespace
         if namespace:
-            logging.debug("Doing sync from profiles for namespace %s", namespace)
+            logging.debug("Doing sync with datastore from profiles for namespace %s", namespace)
             namespace_manager.set_namespace(namespace)
             client = Client.objects.get_from_cache()
             deferred.defer(sync_domain_profiles, client.domain, _queue="sync-queue")
             
     #Restore to the original namespace
     namespace_manager.set_namespace(current_namespace)
-    return HttpResponse(content="Birthday dates were sync from profiles successfully", status=200)
+    return HttpResponse(content="Birthday dates were scheduled to sync from profiles successfully", status=200)
 
 def send_birthday_message(celebrant_pk):
     """
