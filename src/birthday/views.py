@@ -24,6 +24,8 @@ import settings
 
 ECBD_SENDER_EMAIL = getattr(settings, 'ECBD_SENDER_EMAIL')
 ECBD_USER_ATTRIBUTE_ID = getattr(settings, 'ECBD_USER_ATTRIBUTE_ID')
+ECBD_USER_ATTRIBUTE_DAY = getattr(settings, 'ECBD_USER_ATTRIBUTE_DAY')
+ECBD_USER_ATTRIBUTE_MONTH = getattr(settings, 'ECBD_USER_ATTRIBUTE_MONTH')
 
 def sign_out(request, domain):
     """
@@ -139,12 +141,18 @@ def sync_domain_calendar(domain, calendar_id):
     #Query all the calendar events and save 
     #TODO: It may break if there are too many
     event_entries = {}
-    for entry in calendar_helper.get_all_events(calendar_id):
+    all_calendar_events = calendar_helper.get_all_events(calendar_id)
+    logging.info("All calendar events [%s]", 
+                         all_calendar_events)
+    for entry in all_calendar_events:
         for property in entry.extended_property:
             if property.name == ECBD_USER_ATTRIBUTE_ID:
                 event_entries[property.value] = entry
-                logging.debug("User [%s] already had an event in the calendar", 
+                logging.info("User [%s] already had an event in the calendar", 
                          entry.title.text)    
+                
+    logging.info("Event entries with key [%s]", 
+                         event_entries)   
 
     #Query all users in the DB for birthday info
     for user in User.objects.all():
@@ -152,20 +160,21 @@ def sync_domain_calendar(domain, calendar_id):
             #If the user key is not found then the event doesn't exists
             if user.pk in event_entries:
                 #TODO: Check that date in the DS match the one in the event
-                # event_entry = event_entries[user.pk]
-                logging.debug("User [%s] found in DB but already had an event in the calendar, no need to create", 
+                #event_entry = event_entries[user.pk]
+                logging.info("User [%s] found in DB but already had an event in the calendar, no need to create", 
                          user.email)                
             else:
+                #TODO: cambiar(internacionalizar) los textos de acuerdo al idioma
                 calendar_helper.create_yearly_event(calendar_id, 
-                                                    user.email, 
-                                                    "Today is %s %s birthday" % (user.first_name, user.last_name) , 
+                                                    u"Cumpleaños de %s %s" % (user.first_name, user.last_name), 
+                                                    u"Hoy es el cumpleaños de %s %s" % (user.first_name, user.last_name), 
                                                     user.birth_month, 
                                                     user.birth_day, 
                                                     user.pk)
-                logging.debug("Birthday event set in the calendar for user [%s] on day [%s] and month [%s]", 
+                logging.info("Birthday event set in the calendar for user [%s] on day [%s] and month [%s]", 
                          user.email, user.birth_day, user.birth_month)
-                
 
+                
 
 def sync_with_calendar(request):
     """

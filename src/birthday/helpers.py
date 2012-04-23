@@ -34,6 +34,8 @@ CONSUMER_KEY = getattr(settings, 'OAUTH_CONSUMER_KEY')
 CONSUMER_SECRET = getattr(settings, 'OAUTH_CONSUMER_SECRET')
 SCOPE = getattr(settings, 'OAUTH_SCOPE')
 ECBD_USER_ATTRIBUTE_ID = getattr(settings, 'ECBD_USER_ATTRIBUTE_ID')
+ECBD_USER_ATTRIBUTE_DAY = getattr(settings, 'ECBD_USER_ATTRIBUTE_DAY')
+ECBD_USER_ATTRIBUTE_MONTH = getattr(settings, 'ECBD_USER_ATTRIBUTE_MONTH')
 
 SIG_METHOD = gdata.auth.OAuthSignatureMethod.HMAC_SHA1
 
@@ -136,27 +138,21 @@ class CalendarHelper:
     
     def create_yearly_event(self, calendar_id, event_title, event_description, month, day, event_id):
         self.setup_token()
+        logging.info("Creating a yearly event for month [%s] and day [%s]", 
+                          month, day)
         start_date = datetime.today()
         start_date = start_date.replace(month=month, day=day)
         end_date = start_date + timedelta(days=1)
-        logging.info("Start date [%s] eend date [%s]", 
-                          start_date, end_date)
-        logging.info("Start date formatted [%s] eend date [%s]", 
-                          start_date.strftime('%Y%m%d'), 
-                                         end_date.strftime('%Y%m%d'))
-        recurrence_data = ('DTSTART;VALUE=DATE:%s\r\n'
-            + 'DTEND;VALUE=DATE:%s\r\n'
-            + 'RRULE:FREQ=YEARLY\r\n' % (start_date.strftime('%Y%m%d'), 
-                                         end_date.strftime('%Y%m%d')))
-        logging.info("Recurrence data looks like [%s]", 
-                          recurrence_data)
-        event = gdata.calendar.CalendarEventEntry()
-        event.title = atom.Title(text=event_title)
-        event.content = atom.Content(text=event_description)
+        recurrence_data = ('DTSTART;VALUE=DATE:%s\r\nDTEND;VALUE=DATE:%s\r\nRRULE:FREQ=YEARLY\r\n' % (start_date.strftime('%Y%m%d'), end_date.strftime('%Y%m%d')))
+        event = gdata.calendar.data.CalendarEventEntry()
+        event.title = atom.data.Title(text=event_title)
+        event.content = atom.data.Content(text=event_description)
         # Set the recurrence of the event
-        event.recurrence = gdata.calendar.Recurrence(text=recurrence_data)
+        event.recurrence = gdata.data.Recurrence(text=recurrence_data)
         #Put an extended property to identify which user
-        event.extended_property.append(gdata.calendar.ExtendedProperty(name=ECBD_USER_ATTRIBUTE_ID, value=event_id))
+        event.extended_property.append(gdata.calendar.data.CalendarExtendedProperty(name=ECBD_USER_ATTRIBUTE_ID, value=str(event_id)))
+        event.extended_property.append(gdata.calendar.data.CalendarExtendedProperty(name=ECBD_USER_ATTRIBUTE_DAY, value=str(day)))
+        event.extended_property.append(gdata.calendar.data.CalendarExtendedProperty(name=ECBD_USER_ATTRIBUTE_MONTH, value=str(month)))
         
         insert_uri = self.client.get_calendar_event_feed_uri(calendar=calendar_id)
         new_event = self.client.InsertEvent(event, insert_uri)
@@ -209,7 +205,7 @@ class CalendarHelper:
             feed = self.client.get_calendar_event_feed(uri=feed_uri)
             events.extend(feed.entry)
             feed_uri = feed.FindNextLink()
-        logging.debug("Got [%s] entries from profile feed for calendar_id [%s]", 
+        logging.info("Got [%s] entries from profile feed for calendar_id [%s]", 
                          len(events), calendar_id)
         return events
         
