@@ -147,16 +147,21 @@ class CalendarHelper:
         event = gdata.calendar.data.CalendarEventEntry()
         event.title = atom.data.Title(text=event_title)
         event.content = atom.data.Content(text=event_description)
+        
         # Set the recurrence of the event
         event.recurrence = gdata.data.Recurrence(text=recurrence_data)
+                
+        insert_uri = self.client.get_calendar_event_feed_uri(calendar=calendar_id)
+        event = self.client.InsertEvent(event, insert_uri)
         #Put an extended property to identify which user
+        """
+        #The extended properties are not working 
         event.extended_property.append(gdata.calendar.data.CalendarExtendedProperty(name=ECBD_USER_ATTRIBUTE_ID, value=str(event_id)))
         event.extended_property.append(gdata.calendar.data.CalendarExtendedProperty(name=ECBD_USER_ATTRIBUTE_DAY, value=str(day)))
         event.extended_property.append(gdata.calendar.data.CalendarExtendedProperty(name=ECBD_USER_ATTRIBUTE_MONTH, value=str(month)))
-        
-        insert_uri = self.client.get_calendar_event_feed_uri(calendar=calendar_id)
-        new_event = self.client.InsertEvent(event, insert_uri)
-        return new_event
+        event = self.client.Update(event)
+        """
+        return event
     
     def create_calendar(self, title, summary='', color='#2952A3',
                         timezone='America/Bogota', location='Bogota', hidden='false'):
