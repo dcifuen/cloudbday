@@ -60,9 +60,8 @@ def welcome(request, domain):
     if user and user.is_admin:
         return redirect('user_list', domain)
     else:
-        # si student_home_url es vacio, se genera un bucle de redireccion
-        # se deberia definir una url por defecto en caso de que el cliente
-        # no haya configurado esta variable. Por ahora, enviar a eforcers.com
+        # TODO: redirect to a user page, e.g. where he can update his bday 
+        # If user is not admin then redirect to Eforcers
         redirect_url = 'http://www.eforcers.com'
         return HttpResponseRedirect(redirect_url)
    
@@ -150,39 +149,12 @@ def create_yearly_event(domain, calendar_id, birth_month, birth_day, user_id, fi
                      email, birth_day, birth_month)
 
 def sync_domain_calendar(domain, calendar_id):
-    
     #Query all the calendar events and save 
     #TODO: It may break if there are too many
-    """
-    #TODO: The extended properties are not working. This is on hold
-    calendar_helper = CalendarHelper()
-    event_entries = {}
-    all_calendar_events = calendar_helper.get_all_events(calendar_id)
-    logging.info("ID Atribute schema [%s]", ECBD_USER_ATTRIBUTE_ID)
-    for entry in all_calendar_events:
-        logging.info("Processing entry [%s] number of extended properties [%s] content [%s]", 
-                         entry.title.text, len(entry.extended_property))
-        for property in entry.extended_property:
-            logging.info("Processing property [%s] with value [%s]", 
-                         property.name, property.value)
-            if property.name == ECBD_USER_ATTRIBUTE_ID:
-                event_entries[property.value] = entry
-                logging.info("User [%s] already had an event in the calendar", 
-                         entry.title.text)    
-    """
+
     #Query all users in the DB for birthday info
     for user in User.objects.all():
         if user.birth_day and user.birth_month:
-            """
-            #TODO: The extended properties are not working. This is on hold
-            #If the user key is not found then the event doesn't exists
-            if user.pk in event_entries:
-                #TODO: Check that date in the DS match the one in the event
-                #event_entry = event_entries[user.pk]
-                logging.info("User [%s] found in DB but already had an event in the calendar, no need to create", 
-                         user.email)                
-            else:
-            """
             deferred.defer(create_yearly_event, domain, calendar_id, 
                            user.birth_month, user.birth_day, user.pk, 
                            user.first_name, user.last_name, user.email, _queue="sync-queue")

@@ -1,5 +1,5 @@
 application: cloudbday
-version: 0-5-3
+version: 2012q3075
 runtime: python27
 api_version: 1
 threadsafe: yes

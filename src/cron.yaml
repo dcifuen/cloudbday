@@ -6,11 +6,11 @@ cron:
   timezone: America/Bogota
 
 - description: daily morning mailout
-  url: /tasks/birthday/send
+  url: /tasks/birthday/send/
   schedule: every day 01:00
   timezone: America/Bogota  
 
-# TODO: We still cannot do the sync inside the cron
+# TODO: We still cannot do the sync with calendar inside the cron yet
 # - description: daily morning calendar sync
 #  url: /tasks/calendar/sync/
 #  schedule: every day 01:00
