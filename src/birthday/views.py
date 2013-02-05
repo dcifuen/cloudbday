@@ -291,7 +291,7 @@ def send_daily_birthday_messages(request):
             namespace_manager.set_namespace(namespace)
             celebrants = User.objects.filter(receive_mail=True, birth_month=today.month, birth_day=today.day)
             for celebrant in celebrants:
-                logging.debug("Found a celebrant for today! %s", celebrant)
+                logging.info("Found a celebrant for today! %s", celebrant)
                 #Schedule sending email
                 deferred.defer(send_birthday_message, celebrant.pk, _queue="mail-queue")
     #Restore to the original namespace
