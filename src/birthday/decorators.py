@@ -27,9 +27,10 @@ def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
         current_user = users.get_current_user()
-        logging.info('Current logged user [%s]', current_user.email())
         if current_user:
             client = Client.get_instance()
+            if not client:
+                abort(500)  # Not installed yet
             if current_user.email() not in client.administrators:
                 abort(403)  # Unauthorized
             return func(*args, **kwargs)

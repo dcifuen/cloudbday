@@ -1,20 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-{% set bootstrap_version = '2.3.1' %}
-{% set modernizer_version = '2.6.2' %}
-{% set jquery_version = '1.9.1' %}
+{% set jquery_version = '2.1.0' %}
+{% set angular_version = '1.2.16' %}
+{% set bootstrap_version = '3.1.1' %}
+{% set angular_ui_bootstrap_version = '0.10.0' %}
+{% set font_awesome_version = '4.0.3' %}
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
-    <title>{% block title%}Flask on App Engine{% endblock %}</title>
-    <link href="/static/css/bootstrap-{{ bootstrap_version }}.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
-    <style> body { padding-top: 90px; } </style> <!-- Bootstrap -->
-    <link href="/static/css/main.css" rel="stylesheet" />
+    <meta name="description" content="">
+    <meta name="author" content="David Cifuentes">
+    <title>{% block title %}Home{% endblock %} - CloudBirthday</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/{{ font_awesome_version }}/css/font-awesome.css" >
+    <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700' type='text/css'>
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
+    <link rel="stylesheet" href="/static/css/style.css" type="text/css" media=screen>
+    <style> body { padding-top: 90px; } </style> <!-- Bootstrap -->
+    <style type="text/css">
+        #overlay {
+            width:100%; height:100%; margin:0; padding:0;
+            background:#fff url('/static/img/ajax_loader_gray_32.gif') no-repeat center center;
+            position:fixed;
+            z-index:999;
+            top: 0px;
+            left: 0px;
+        }
+    </style>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
     {% block style_block %}{# page-specific CSS #}{% endblock %}
-    <script src="/static/js/lib/modernizr-{{ modernizer_version }}.min.js"></script>{# Modernizr must be here, above body tag. #}
     {% block head_script %}{# defer-incapable JS block #}{% endblock %}
 </head>
 <body>
@@ -32,8 +53,8 @@
             {% block footer %}{% endblock %}
         </div><!-- /footer -->
     </footer>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>
-    <script src="/static/js/lib/bootstrap-{{ bootstrap_version }}.min.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/js/bootstrap.min.js"></script>
     <script src="/static/js/main.js"></script>
     {% block tail_script %}{# defer-capable JS block #}{% endblock %}
     {{ profiler_includes|safe }}

@@ -22,7 +22,7 @@ from google.appengine.ext.db.metadata import get_namespaces
 from birthday.forms import BirthdayFileForm
 from birthday.helpers import OAuthDanceHelper, DirectoryHelper
 from birthday.models import get_birthdays, Client, User
-from flask import request, render_template, flash, url_for, redirect, abort
+from flask import request, render_template, flash, url_for, redirect, abort, g
 from flask_cache import Cache
 from birthday import app, constants
 from decorators import login_required, admin_required
@@ -34,6 +34,26 @@ from tasks import send_birthday_message
 # Flask-Cache (configured to use App Engine Memcache API)
 cache = Cache(app)
 
+@app.before_request
+def before_request():
+    if request.path == url_for('warmup'):
+        return
+    user = users.get_current_user()
+    if user:
+        g.logout_text = 'Logout'
+        g.url_logout = users.create_logout_url(url_for('admin_index'))
+        g.user_email = user.email()
+    else:
+        g.logout_text = 'Login'
+        g.url_logout = users.create_login_url(url_for('admin_index'))
+        g.user_email = None
+    g.menu = []
+    for endpoint, name in constants.MENU_ITEMS:
+        g.menu.append({
+            'is_active': request.path == url_for(endpoint),
+            'url': url_for(endpoint),
+            'name': name,
+        })
 
 @app.route('/_ah/warmup')
 def warmup():
@@ -43,9 +63,12 @@ def warmup():
     """
     return ''
 
+def index():
+    pass
+
 @app.route('/admin/', methods=['GET'])
 @admin_required
-def admin_only():
+def admin_index():
     """This view requires an admin account"""
     return 'Super-seekrit admin page.'
 

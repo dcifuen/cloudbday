@@ -31,3 +31,9 @@ GENDERS = [
 OAUTH2_SCOPES = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/admin.directory.user.readonly https://www.googleapis.com/auth/plus.profiles.read https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/calendar https://www.google.com/m8/feeds'
 
 BIRTHDAY_CSV_COLUMNS = ["email", "birthday"]
+
+MENU_ITEMS = [
+    ('admin_index', 'Home'),
+    ('upload_csv', 'Upload'),
+    ('settings', 'Settings'),
+]

@@ -45,6 +45,10 @@ handlers:
   static_files: birthday/static/robots.txt
   upload: birthday/static/robots.txt
 
+- url: /
+  static_files: birthday/static/html/index.html
+  upload: birthday/static/html/index.html
+
 - url: /gae_mini_profiler/static
   static_dir: lib/gae_mini_profiler/static
 

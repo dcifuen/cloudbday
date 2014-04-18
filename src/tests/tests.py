@@ -176,15 +176,15 @@ class DemoTestCase(AppEngineFlaskTestCase):
     
     def test_admin_login(self):
         #Anonymous
-        rv = self.app.get('/admin_only')
+        rv = self.app.get('/admin_index')
         assert rv.status == '302 FOUND'
         #Normal user
         self.set_current_user(u'john@example.com', u'123')
-        rv = self.app.get('/admin_only')
+        rv = self.app.get('/admin_index')
         assert rv.status == '302 FOUND'
         #Admin
         self.set_current_user(u'john@example.com', u'123', True)
-        rv = self.app.get('/admin_only')
+        rv = self.app.get('/admin_index')
         assert rv.status == '200 OK'
 
     def test_404(self):
