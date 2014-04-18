@@ -1,9 +1,0 @@
-eclipse.preferences.version=1
-encoding//src/birthday/admin.py=utf-8
-encoding//src/birthday/fields.py=utf-8
-encoding//src/birthday/forms.py=utf-8
-encoding//src/birthday/helpers.py=utf-8
-encoding//src/birthday/models.py=utf-8
-encoding//src/birthday/tasks.py=utf-8
-encoding//src/birthday/templates/mensaje-sin-formato-alpina.com.html=UTF-8
-encoding//src/birthday/views.py=utf-8

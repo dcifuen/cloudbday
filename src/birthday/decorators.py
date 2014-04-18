@@ -1,42 +1,49 @@
-'''
-Created on 30/01/2012
+"""
+decorators.py
 
-@author: eforcers
-'''
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.decorators import user_passes_test
-from birthday.models import User, Client
+Decorators for URL handlers
 
-def admin_login_required(login_url=None):
-    
-    """
-    Decorator for views that checks that the user is logged in and is an administrator, 
-    redirecting to the log-in page if necessary.
-    """
-    def _is_admin(user):
-        try:
-            # First time setup
-            client = Client.objects.get_from_cache()
-        except Client.DoesNotExist:
-            return True
-        
-        if user.is_authenticated() :
-            try:            
-                ecbd_user = User.objects.get(email=user.email)
-                return ecbd_user.is_admin
-            
-            except User.DoesNotExist:
-                return False
-        else:
-            return False
-    
-    if not login_url:
-        login_url = '/'
-    
-    actual_decorator = user_passes_test(
-        _is_admin,
-        login_url=login_url,
-        redirect_field_name=REDIRECT_FIELD_NAME
-    )
-    
-    return actual_decorator
+"""
+
+from functools import wraps
+import logging
+from google.appengine.api import users
+from birthday.models import Client
+from flask import redirect, request, abort
+
+
+def login_required(func):
+    """Requires standard login credentials"""
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not users.get_current_user():
+            return redirect(users.create_login_url(request.url))
+        return func(*args, **kwargs)
+    return decorated_view
+
+
+def admin_required(func):
+    """Requires domain admin credentials"""
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        current_user = users.get_current_user()
+        logging.info('Current logged user [%s]', current_user.email())
+        if current_user:
+            client = Client.get_instance()
+            if current_user.email() not in client.administrators:
+                abort(403)  # Unauthorized
+            return func(*args, **kwargs)
+        return redirect(users.create_login_url(request.url))
+    return decorated_view
+
+
+def super_admin_required(func):
+    """Requires App Engine admin credentials"""
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if users.get_current_user():
+            if not users.is_current_user_admin():
+                abort(401)  # Unauthorized
+            return func(*args, **kwargs)
+        return redirect(users.create_login_url(request.url))
+    return decorated_view

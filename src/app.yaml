@@ -1,43 +1,65 @@
 application: cloudbday
-version: 2013q1013
+version: 2014q1032
 runtime: python27
 api_version: 1
-threadsafe: yes
+threadsafe: true
+
+default_expiration: "5d"
 
 builtins:
+- appstats: on
+- admin_redirect: on
 - remote_api: on
-- deferred: on
+
+libraries:
+- name: jinja2
+  version: "latest"
+- name: markupsafe
+  version: "latest"
+- name: lxml
+  version: "latest"
+- name: endpoints
+  version: "latest"
 
 inbound_services:
 - warmup
 
-libraries:
-- name: django
-  version: latest
-- name: lxml
-  version: latest
+error_handlers:
+  - file: birthday/static/html/default_error.html
+
+  - error_code: over_quota
+    file: birthday/static/html/over_quota.html
+
+  - error_code: dos_api_denial
+    file: birthday/static/html/dos.html
+
+  - error_code: timeout
+    file: birthday/static/html/timeout.html
 
 handlers:
+- url: /favicon.ico
+  static_files: birthday/static/img/favicon.ico
+  upload: birthday/static/img/favicon.ico
+
+- url: /robots.txt
+  static_files: birthday/static/robots.txt
+  upload: birthday/static/robots.txt
+
+- url: /gae_mini_profiler/static
+  static_dir: lib/gae_mini_profiler/static
+
+- url: /gae_mini_profiler/.*
+  script: lib.gae_mini_profiler.main.application
+
+- url: /_ah/spi/.*
+  script: run.api
+
 - url: /_ah/queue/deferred
-  script: djangoappengine.deferred.handler.application
+  script: run.deferred_app
   login: admin
 
-- url: /_ah/stats/.*
-  script: djangoappengine.appstats.application
+- url: /static
+  static_dir: birthday/static
 
-- url: /media/admin
-  static_dir: django/contrib/admin/media
-  expiration: '0'
-  
-- url: /dojango/dojo-media/1.6.1/dojango
-  static_dir: dojango/dojo-media/dojango
-  
-- url: /media
-  static_dir: birthday/media
-  
-- url: /favicon\.ico
-  static_files: birthday/media/img/favicon.ico
-  upload: birthday/media/img/favicon\.ico
-
-- url: /.*
-  script: djangoappengine.main.application
+- url: .*
+  script: run.birthday.app

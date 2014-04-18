@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Upload birthdays from a CSV file</h3>
+        <div class="span6">
+        <p>
+            The file to be uploaded must be in CSV format with the fields described below.
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Field
+                    </th>
+                    <th>
+                        Description
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>
+                        first_name
+                    </td>
+                    <td>
+                        First or given name of the user
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        last_name
+                    </td>
+                    <td>
+                        Last name or surname of the user
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        email
+                    </td>
+                    <td>
+                        Email address of the user
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        birthday
+                    </td>
+                    <td>
+                        Date of birth of the user. Use ISO format YYYY-MM-DD (with the year), or --MM-DD (without the year).
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            For downloading a CSV template <a href="
+            {{ url_for('get_csv_template') }}">click here</a>
+        </p>
+    </div>
+
+    <form id="upload-csv" class="well form-horizontal"
+          action="{{ url_for('upload_csv') }}" method="post"
+          accept-charset="utf-8" enctype="multipart/form-data">
+        <fieldset>
+            {{ form.hidden_tag() }}
+            <input type="hidden" name="mode" value="upload" />
+            <div class="control-group">
+                <div class="control-label">{{ form.birthday_file.label }}</div>
+                <div class="controls">
+                    {{ form.birthday_file|safe }}
+                    {% if form.birthday_file.errors %}
+                        <ul class="errors">
+                            {% for error in form.birthday_file.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit"
+                           value="Upload"/>
+                    <a class="btn cancel" href="{{ url_for('list_birthdays') }}">Cancel</a>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+{% endblock content %}
