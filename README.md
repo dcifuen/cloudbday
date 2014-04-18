@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CloudBirthday
 =============
 
@@ -255,3 +256,9 @@ HTML5 detection provided by [Modernizr 2][modernizr] (configured with all featur
 [profiler]: http://packages.python.org/Flask-GAE-Mini-Profiler/
 [wz]: http://werkzeug.pocoo.org/
 [wzda]: https://github.com/nshah/werkzeug-debugger-appengine
+=======
+cloudbday
+=========
+
+Send a corporate greeting for each employee on their birthday, that will make them a bit happier that day
+>>>>>>> c7608183c381564c8e78d6146d44a2b3a38c7aff
