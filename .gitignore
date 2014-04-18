@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Standard ignores
 *.pyc
 *.pyo
@@ -20,7 +19,7 @@ secret_keys.py
 .settings/
 .project
 .pydevproject
-=======
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -75,4 +74,3 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
->>>>>>> c7608183c381564c8e78d6146d44a2b3a38c7aff
